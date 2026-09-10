@@ -93,4 +93,8 @@ public class PlayerMovement : MonoBehaviour
         sprintSpeed = newSprintSpeed;
         jumpHeight = newJumpHeight;
     }
+    public void ResetVerticalVelocity()
+    {
+        verticalVelocity = 0f;
+    }
 }
