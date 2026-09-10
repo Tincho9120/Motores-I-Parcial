@@ -18,16 +18,18 @@ public class PlayerMovement : MonoBehaviour
 
     private Vector2 moveInput;
     private float verticalVelocity;
-
+    private PlayerInput playerInput;
     private bool isSprinting;
 
     private void Start()
     {
         characterController = GetComponent<CharacterController>();
+        playerInput = GetComponent<PlayerInput>();
     }
 
     private void Update()
     {
+        isSprinting = playerInput.actions["Sprint"].IsPressed();
         Move();
     }
 
@@ -44,10 +46,6 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    public void OnSprint(InputValue value)
-    {
-        isSprinting = value.isPressed;
-    }
 
     private void Move()
     {
