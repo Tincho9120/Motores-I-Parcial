@@ -13,7 +13,7 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Gravedad")]
     [SerializeField] private float gravity = -9.81f;
-
+    [SerializeField] private Transform cameraTransform;
     private CharacterController characterController;
 
     private Vector2 moveInput;
@@ -49,7 +49,18 @@ public class PlayerMovement : MonoBehaviour
 
     private void Move()
     {
-        Vector3 direction = new Vector3(moveInput.x, 0f, moveInput.y);
+        Vector3 cameraForward = cameraTransform.forward;
+        Vector3 cameraRight = cameraTransform.right;
+
+        cameraForward.y = 0f;
+        cameraRight.y = 0f;
+
+        cameraForward.Normalize();
+        cameraRight.Normalize();
+
+        Vector3 direction =
+            cameraForward * moveInput.y +
+            cameraRight * moveInput.x;
 
         if (direction.magnitude > 0.1f)
         {
