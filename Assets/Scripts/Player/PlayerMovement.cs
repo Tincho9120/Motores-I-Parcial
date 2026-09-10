@@ -87,4 +87,10 @@ public class PlayerMovement : MonoBehaviour
 
         characterController.Move(movement * Time.deltaTime);
     }
+    public void SetMovementValues(float newMoveSpeed, float newSprintSpeed, float newJumpHeight)
+    {
+        moveSpeed = newMoveSpeed;
+        sprintSpeed = newSprintSpeed;
+        jumpHeight = newJumpHeight;
+    }
 }
