@@ -122,6 +122,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "DeleteClone",
+                    "type": "Button",
+                    "id": "298cdaee-ae9d-4ca2-b842-4f4d659d8b49",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -551,6 +560,17 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "Clone",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "59a01a58-590b-4553-8c98-472e4e30490c",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "DeleteClone",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

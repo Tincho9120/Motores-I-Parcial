@@ -29,6 +29,13 @@ public class PlayerClone : MonoBehaviour
             CreateClone();
         }
     }
+    public void OnDeleteClone(InputValue value)
+    {
+        if (value.isPressed)
+        {
+            DeleteOldestClone();
+        }
+    }
     private void CreateClone()
     {
         if (maxClones <= 0)
@@ -62,5 +69,13 @@ public class PlayerClone : MonoBehaviour
         newClone.transform.localScale = cloneScale;
         // Lo agregamos a la cola
         clones.Enqueue(newClone);
+    }
+    private void DeleteOldestClone()
+    {
+        if (clones.Count > 0)
+        {
+            GameObject oldestClone = clones.Dequeue();
+            Destroy(oldestClone);
+        }
     }
 }
