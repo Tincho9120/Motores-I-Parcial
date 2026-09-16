@@ -53,6 +53,7 @@ public class PlayerClone : MonoBehaviour
             Destroy(oldestClone);
         }
         // Teletransportamos al jugador al respawn
+        NotifyPlatesBeforeLeaving();
         characterController.enabled = false;
         transform.position = respawnPoint.position;
         transform.rotation = respawnPoint.rotation;
@@ -76,6 +77,18 @@ public class PlayerClone : MonoBehaviour
         {
             GameObject oldestClone = clones.Dequeue();
             Destroy(oldestClone);
+        }
+    }
+    private void NotifyPlatesBeforeLeaving()
+    {
+        Collider[] hits = Physics.OverlapSphere(transform.position, characterController.radius);
+        foreach (var hit in hits)
+        {
+            PressurePlate plate = hit.GetComponent<PressurePlate>();
+            if (plate != null)
+            {
+                plate.RemovePlayer();
+            }
         }
     }
 }
