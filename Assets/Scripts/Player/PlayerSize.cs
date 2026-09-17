@@ -22,11 +22,17 @@ public class PlayerSize : MonoBehaviour
     [SerializeField] private float largeMoveSpeed = 3.5f;
     [SerializeField] private float largeSprintSpeed = 5.5f;
     [SerializeField] private float largeJumpHeight = 1f;
+
+    [Header("Colisión al cambiar de tamaño")]
+    [SerializeField] private LayerMask obstacleLayer;
+    [SerializeField] private float groundClearance = 0.1f;
     private PlayerMovement playerMovement;
+    private CharacterController characterController;
     private int currentSize = 2;
     private void Start()
     {
         playerMovement = GetComponent<PlayerMovement>();
+        characterController = GetComponent<CharacterController>();
         ChangeSize(2);
     }
     public void OnSmall(InputValue value)
@@ -52,6 +58,12 @@ public class PlayerSize : MonoBehaviour
     }
     private void ChangeSize(int newSize)
     {
+        float targetScale = GetScaleForSize(newSize);
+
+        if (!CanChangeSize(targetScale))
+        {
+            return;
+        }
         currentSize = newSize;
 
         switch (currentSize)
@@ -86,5 +98,26 @@ public class PlayerSize : MonoBehaviour
                 );
                 break;
         }
+    }
+    private float GetScaleForSize(int size)
+    {
+        switch (size)
+        {
+            case 1: return smallScale;
+            case 3: return largeScale;
+            default: return mediumScale;
+        }
+    }
+    private bool CanChangeSize(float targetScale)
+    {
+        float radius = characterController.radius * targetScale;
+        float height = characterController.height * targetScale;
+        float halfHeight = Mathf.Max(height * 0.5f - radius, 0.01f);
+
+        Vector3 center = transform.position + transform.rotation * (characterController.center * targetScale);
+        Vector3 point1 = center + Vector3.up * halfHeight;
+        Vector3 point2 = center - Vector3.up * halfHeight + Vector3.up * groundClearance;
+
+        return !Physics.CheckCapsule(point1, point2, radius, obstacleLayer, QueryTriggerInteraction.Ignore);
     }
 }
