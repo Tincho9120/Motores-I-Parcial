@@ -7,12 +7,14 @@ public class PlayerClone : MonoBehaviour
     [Header("Clone")]
     [SerializeField] private GameObject clonePrefab;
     [SerializeField] private int maxClones = 2;
+    [SerializeField] private float cloneCooldown = 0.3f;
 
     [Header("Respawn")]
     [SerializeField] private Transform respawnPoint;
 
     private Queue<GameObject> clones = new Queue<GameObject>();
-
+    private float lastCloneTime = -999f;
+    private bool cloningAllowed = true;
     private PlayerMovement playerMovement;
     private CharacterController characterController;
 
@@ -36,6 +38,10 @@ public class PlayerClone : MonoBehaviour
             DeleteOldestClone();
         }
     }
+    public void SetCloningAllowed(bool allowed)
+    {
+        cloningAllowed = allowed;
+    }
     private void CreateClone()
     {
         if (maxClones <= 0)
@@ -43,6 +49,9 @@ public class PlayerClone : MonoBehaviour
             return;
         }
         // Guardamos la posicion, rotacion y escala actual del jugador
+        if (!cloningAllowed) return;
+        if (Time.time - lastCloneTime < cloneCooldown) return;
+        lastCloneTime = Time.time;
         Vector3 clonePosition = transform.position;
         Quaternion cloneRotation = transform.rotation;
         Vector3 cloneScale = transform.localScale;
