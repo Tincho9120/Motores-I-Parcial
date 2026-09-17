@@ -7,7 +7,6 @@ public class CloneBody : MonoBehaviour
 
     private void OnDestroy()
     {
-        Debug.Log($"[CloneBody] {name} destruido, invocando evento");
         OnCloneDestroyed?.Invoke();
     }
 }

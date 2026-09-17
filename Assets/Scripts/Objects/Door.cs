@@ -9,9 +9,11 @@ public class Door : MonoBehaviour
     public void ActivatePlate()
     {
         activePlates++;
+        Debug.Log($"{name}: ActivatePlate, activePlates={activePlates}, requiredPlates={requiredPlates}");
 
         if (activePlates >= requiredPlates)
         {
+            Debug.Log($"{name}: llamando OpenDoor");
             OpenDoor();
         }
     }
