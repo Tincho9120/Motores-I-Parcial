@@ -22,12 +22,7 @@ public class PressurePlate : MonoBehaviour
                 {
                     cloneBody.OnCloneDestroyed += HandleCloneDestroyed; // suscripcion
                 }
-            }
-
-            if (objectsOnPlate == 1)
-            {
-                door.ActivatePlate();
-            }
+            }   
         }
     }
 

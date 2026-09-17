@@ -3,9 +3,19 @@ using UnityEngine;
 public class InteractableButton : MonoBehaviour, IInteractable
 {
     [SerializeField] private Door door;
+    private bool isActivated = false;
 
     public void Interact()
     {
-        door.ActivatePlate();
+        isActivated = !isActivated;
+        if (isActivated)
+        {
+            door.ActivatePlate();
+        }
+        else
+        {
+            door.DeactivatePlate();
+        }
+
     }
 }
