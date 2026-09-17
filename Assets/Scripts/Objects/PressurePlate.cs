@@ -11,6 +11,10 @@ public class PressurePlate : MonoBehaviour
         if (other.CompareTag("Player") || other.CompareTag("Clone"))
         {
             objectsOnPlate++;
+            if (objectsOnPlate == 1 && door != null)
+            {
+                door.ActivatePlate();
+            }
             if (other.CompareTag("Clone"))
             {
                 CloneBody cloneBody = other.GetComponent<CloneBody>();
@@ -43,7 +47,11 @@ public class PressurePlate : MonoBehaviour
         if (objectsOnPlate <= 0)
         {
             objectsOnPlate = 0;
-            door.DeactivatePlate();
+
+            if (door != null)
+            {
+                door.DeactivatePlate();
+            }
         }
     }
     public void RemovePlayer()
