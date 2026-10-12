@@ -17,11 +17,13 @@ public class PlayerClone : MonoBehaviour
     private bool cloningAllowed = true;
     private PlayerMovement playerMovement;
     private CharacterController characterController;
+    private PlayerSize playerSize;
 
     private void Start()
     {
         playerMovement = GetComponent<PlayerMovement>();
         characterController = GetComponent<CharacterController>();
+        playerSize = GetComponent<PlayerSize>();
     }
 
     public void OnClone(InputValue value)
@@ -55,7 +57,6 @@ public class PlayerClone : MonoBehaviour
         Vector3 clonePosition = transform.position;
         Quaternion cloneRotation = transform.rotation;
         Vector3 cloneScale = transform.localScale;
-        // Si llegamos al limite, eliminamos el clon mas viejo
         if (clones.Count >= maxClones)
         {
             GameObject oldestClone = clones.Dequeue();
@@ -77,6 +78,11 @@ public class PlayerClone : MonoBehaviour
         );
         // El clon mantiene el tamaño que tenia el jugador
         newClone.transform.localScale = cloneScale;
+        CloneBody cloneBody = newClone.GetComponent<CloneBody>();
+        if (cloneBody != null)
+        {
+            cloneBody.Size = playerSize.CurrentSizeMask;
+        }
         // Lo agregamos a la cola
         clones.Enqueue(newClone);
     }

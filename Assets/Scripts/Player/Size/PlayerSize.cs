@@ -29,6 +29,7 @@ public class PlayerSize : MonoBehaviour
     private PlayerMovement playerMovement;
     private CharacterController characterController;
     private int currentSize = 2;
+    public SizeMask CurrentSizeMask => (SizeMask)(1 << (currentSize - 1));
     private void Start()
     {
         playerMovement = GetComponent<PlayerMovement>();
