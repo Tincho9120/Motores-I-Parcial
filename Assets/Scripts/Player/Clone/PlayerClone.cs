@@ -9,23 +9,35 @@ public class PlayerClone : MonoBehaviour
     [SerializeField] private int maxClones = 2;
     [SerializeField] private float cloneCooldown = 0.3f;
 
-    [Header("Respawn")]
-    [SerializeField] private Transform respawnPoint;
-
     private Queue<GameObject> clones = new Queue<GameObject>();
+    private List<Collider> ignoredClones = new List<Collider>();
     private float lastCloneTime = -999f;
     private bool cloningAllowed = true;
-    private PlayerMovement playerMovement;
     private CharacterController characterController;
     private PlayerSize playerSize;
+    [SerializeField] private float stepDistance = 1.5f;
 
     private void Start()
     {
-        playerMovement = GetComponent<PlayerMovement>();
         characterController = GetComponent<CharacterController>();
         playerSize = GetComponent<PlayerSize>();
     }
-
+    private void Update()
+    {
+        for (int i = ignoredClones.Count - 1; i >= 0; i--)
+        {
+            Collider cloneCollider = ignoredClones[i];
+            if (cloneCollider == null) 
+            {
+                ignoredClones.RemoveAt(i);
+            }
+            else if (!characterController.bounds.Intersects(cloneCollider.bounds))
+            {            
+                Physics.IgnoreCollision(characterController, cloneCollider, false);
+                ignoredClones.RemoveAt(i);
+            }
+        }
+    }
     public void OnClone(InputValue value)
     {
         if (value.isPressed)
@@ -46,64 +58,35 @@ public class PlayerClone : MonoBehaviour
     }
     private void CreateClone()
     {
-        if (maxClones <= 0)
-        {
-            return;
-        }
-        // Guardamos la posicion, rotacion y escala actual del jugador
+        if (maxClones <= 0) return;
         if (!cloningAllowed) return;
         if (Time.time - lastCloneTime < cloneCooldown) return;
         lastCloneTime = Time.time;
-        Vector3 clonePosition = transform.position;
-        Quaternion cloneRotation = transform.rotation;
-        Vector3 cloneScale = transform.localScale;
         if (clones.Count >= maxClones)
         {
-            GameObject oldestClone = clones.Dequeue();
-            Destroy(oldestClone);
+            Destroy(clones.Dequeue());
         }
-        // Teletransportamos al jugador al respawn
-        NotifyPlatesBeforeLeaving();
-        characterController.enabled = false;
-        transform.position = respawnPoint.position;
-        transform.rotation = respawnPoint.rotation;
-        characterController.enabled = true;
-        playerMovement.ResetVerticalVelocity();
-
-        // Creamos el clon donde estaba el jugador
-        GameObject newClone = Instantiate(
-            clonePrefab,
-            clonePosition,
-            cloneRotation
-        );
-        // El clon mantiene el tamaño que tenia el jugador
-        newClone.transform.localScale = cloneScale;
+        GameObject newClone = Instantiate(clonePrefab, transform.position, transform.rotation);
+        newClone.transform.localScale = transform.localScale;
         CloneBody cloneBody = newClone.GetComponent<CloneBody>();
         if (cloneBody != null)
         {
             cloneBody.Size = playerSize.CurrentSizeMask;
         }
-        // Lo agregamos a la cola
+        Collider cloneCollider = newClone.GetComponent<Collider>();
+        if (cloneCollider != null)
+        {
+            Physics.IgnoreCollision(characterController, cloneCollider, true);
+            ignoredClones.Add(cloneCollider);
+        }
+        characterController.Move(transform.forward * stepDistance * transform.localScale.x);
         clones.Enqueue(newClone);
     }
     private void DeleteOldestClone()
     {
         if (clones.Count > 0)
         {
-            GameObject oldestClone = clones.Dequeue();
-            Destroy(oldestClone);
-        }
-    }
-    private void NotifyPlatesBeforeLeaving()
-    {
-        Collider[] hits = Physics.OverlapSphere(transform.position, characterController.radius);
-        foreach (var hit in hits)
-        {
-            PressurePlate plate = hit.GetComponent<PressurePlate>();
-            if (plate != null)
-            {
-                plate.RemovePlayer();
-            }
+            Destroy(clones.Dequeue());
         }
     }
 }
