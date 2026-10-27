@@ -15,7 +15,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float gravity = -9.81f;
     [SerializeField] private Transform cameraTransform;
     private CharacterController characterController;
-
+    [SerializeField] private Animator animator;
     private Vector2 moveInput;
     private float verticalVelocity;
     private PlayerInput playerInput;
@@ -86,6 +86,7 @@ public class PlayerMovement : MonoBehaviour
         movement.y = verticalVelocity;
 
         characterController.Move(movement * Time.deltaTime);
+        UpdateAnimator();
     }
     public void SetMovementValues(float newMoveSpeed, float newSprintSpeed, float newJumpHeight)
     {
@@ -93,8 +94,20 @@ public class PlayerMovement : MonoBehaviour
         sprintSpeed = newSprintSpeed;
         jumpHeight = newJumpHeight;
     }
-    public void ResetVerticalVelocity()
+    private void UpdateAnimator()
     {
-        verticalVelocity = 0f;
+        if (animator == null) return;
+
+        bool grounded = characterController.isGrounded;
+
+        float speed = 0f;
+        if (moveInput.magnitude > 0.1f)
+        {
+            speed = isSprinting ? 1f : 0.5f;
+        }
+
+        animator.SetFloat("Speed", speed, 0.1f, Time.deltaTime);
+        animator.SetBool("Ground", grounded);
+        animator.SetBool("Falling", !grounded && verticalVelocity < -0.1f);
     }
 }
