@@ -16,7 +16,9 @@ public class PlayerClone : MonoBehaviour, IClonePool
     private CharacterController characterController;
     private PlayerSize playerSize;
     [SerializeField] private float stepDistance = 1.5f;
-
+    public event System.Action<int, int> OnCloneCountChanged;
+    public int CloneCount => clones.Count;
+    public int MaxClones => maxClones;
     private void Start()
     {
         characterController = GetComponent<CharacterController>();
@@ -81,13 +83,16 @@ public class PlayerClone : MonoBehaviour, IClonePool
         }
         characterController.Move(transform.forward * stepDistance * transform.localScale.x);
         clones.Enqueue(newClone);
+        NotifyCloneCount();
     }
     private void DeleteOldestClone()
     {
         if (clones.Count > 0)
         {
             Destroy(clones.Dequeue());
+            NotifyCloneCount();
         }
+
     }
     public void RemoveClone(GameObject clone)
     {
@@ -100,7 +105,13 @@ public class PlayerClone : MonoBehaviour, IClonePool
                 remaining.Enqueue(c);
             }
         }
+
         clones = remaining;
+        NotifyCloneCount();
         Destroy(clone);
+    }
+    private void NotifyCloneCount()
+    {
+        OnCloneCountChanged?.Invoke(clones.Count, maxClones);
     }
 }

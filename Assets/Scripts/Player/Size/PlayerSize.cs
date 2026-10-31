@@ -30,6 +30,7 @@ public class PlayerSize : MonoBehaviour
     private CharacterController characterController;
     private int currentSize = 2;
     public SizeMask CurrentSizeMask => (SizeMask)(1 << (currentSize - 1));
+    public event System.Action<SizeMask> OnSizeChanged;
     private void Start()
     {
         playerMovement = GetComponent<PlayerMovement>();
@@ -99,6 +100,7 @@ public class PlayerSize : MonoBehaviour
                 );
                 break;
         }
+        OnSizeChanged?.Invoke(CurrentSizeMask);
     }
     private float GetScaleForSize(int size)
     {
