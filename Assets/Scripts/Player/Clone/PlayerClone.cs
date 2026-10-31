@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
 
-public class PlayerClone : MonoBehaviour
+public class PlayerClone : MonoBehaviour, IClonePool
 {
     [Header("Clone")]
     [SerializeField] private GameObject clonePrefab;
@@ -88,5 +88,19 @@ public class PlayerClone : MonoBehaviour
         {
             Destroy(clones.Dequeue());
         }
+    }
+    public void RemoveClone(GameObject clone)
+    {
+        if (clone == null) return;
+        Queue<GameObject> remaining = new Queue<GameObject>();
+        foreach (GameObject c in clones)
+        {
+            if (c != null && c != clone)
+            {
+                remaining.Enqueue(c);
+            }
+        }
+        clones = remaining;
+        Destroy(clone);
     }
 }
