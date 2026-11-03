@@ -6,9 +6,20 @@ public class PressurePlate : MonoBehaviour
     [SerializeField] private Door door;
     [SerializeField] private SizeMask allowedSizes = SizeMask.Small | SizeMask.Medium | SizeMask.Large;
     [SerializeField] private bool acceptsBoxes = true;
+
+    [Header("Sonidos")]
+    [SerializeField] private AudioClip activateClip;
+    [SerializeField] private AudioClip deactivateClip;
     private int objectsOnPlate = 0;
     private bool playerCounted = false;
     private readonly HashSet<PushableBox> boxesOnPlate = new HashSet<PushableBox>();
+    private AudioSource audioSource;
+
+    private void Awake()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         PushableBox box = other.GetComponentInParent<PushableBox>();
@@ -84,12 +95,21 @@ public class PressurePlate : MonoBehaviour
         return (allowedSizes & size) != 0;
     }
 
+    private void PlaySound(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+        {
+            audioSource.PlayOneShot(clip);
+        }
+    }
+
     private void AddObjectToPlate()
     {
         objectsOnPlate++;
 
         if (objectsOnPlate == 1 && door != null)
         {
+            PlaySound(activateClip);
             door.ActivatePlate();
         }
     }
@@ -104,6 +124,7 @@ public class PressurePlate : MonoBehaviour
 
             if (door != null)
             {
+                PlaySound(deactivateClip);
                 door.DeactivatePlate();
             }
         }
