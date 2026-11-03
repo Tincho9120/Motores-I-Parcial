@@ -26,8 +26,13 @@ public class PlayerSize : MonoBehaviour
     [Header("Colisión al cambiar de tamaño")]
     [SerializeField] private LayerMask obstacleLayer;
     [SerializeField] private float groundClearance = 0.1f;
+
+    [Header("Sonido")]
+    [SerializeField] private AudioClip changeSizeClip;
+
     private PlayerMovement playerMovement;
     private CharacterController characterController;
+    private AudioSource audioSource;
     private int currentSize = 2;
     public SizeMask CurrentSizeMask => (SizeMask)(1 << (currentSize - 1));
     public event System.Action<SizeMask> OnSizeChanged;
@@ -35,6 +40,7 @@ public class PlayerSize : MonoBehaviour
     {
         playerMovement = GetComponent<PlayerMovement>();
         characterController = GetComponent<CharacterController>();
+        audioSource = GetComponent<AudioSource>();
         ChangeSize(2);
     }
     public void OnSmall(InputValue value)
@@ -65,6 +71,11 @@ public class PlayerSize : MonoBehaviour
         if (!CanChangeSize(targetScale))
         {
             return;
+        }
+        // si ya estaba en ese tamaño no suena (al arrancar entra en mediano)
+        if (newSize != currentSize && audioSource != null && changeSizeClip != null)
+        {
+            audioSource.PlayOneShot(changeSizeClip);
         }
         currentSize = newSize;
 

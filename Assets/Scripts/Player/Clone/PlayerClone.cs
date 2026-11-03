@@ -9,12 +9,17 @@ public class PlayerClone : MonoBehaviour, IClonePool
     [SerializeField] private int maxClones = 2;
     [SerializeField] private float cloneCooldown = 0.3f;
 
+    [Header("Sonidos")]
+    [SerializeField] private AudioClip createClip;
+    [SerializeField] private AudioClip deleteClip;
+
     private Queue<GameObject> clones = new Queue<GameObject>();
     private List<Collider> ignoredClones = new List<Collider>();
     private float lastCloneTime = -999f;
     private bool cloningAllowed = true;
     private CharacterController characterController;
     private PlayerSize playerSize;
+    private AudioSource audioSource;
     [SerializeField] private float stepDistance = 1.5f;
     public event System.Action<int, int> OnCloneCountChanged;
     public int CloneCount => clones.Count;
@@ -23,6 +28,7 @@ public class PlayerClone : MonoBehaviour, IClonePool
     {
         characterController = GetComponent<CharacterController>();
         playerSize = GetComponent<PlayerSize>();
+        audioSource = GetComponent<AudioSource>();
     }
     private void Update()
     {
@@ -83,6 +89,7 @@ public class PlayerClone : MonoBehaviour, IClonePool
         }
         characterController.Move(transform.forward * stepDistance * transform.localScale.x);
         clones.Enqueue(newClone);
+        PlaySound(createClip);
         NotifyCloneCount();
     }
     private void DeleteOldestClone()
@@ -90,6 +97,7 @@ public class PlayerClone : MonoBehaviour, IClonePool
         if (clones.Count > 0)
         {
             Destroy(clones.Dequeue());
+            PlaySound(deleteClip);
             NotifyCloneCount();
         }
 
@@ -109,6 +117,13 @@ public class PlayerClone : MonoBehaviour, IClonePool
         clones = remaining;
         NotifyCloneCount();
         Destroy(clone);
+    }
+    private void PlaySound(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+        {
+            audioSource.PlayOneShot(clip);
+        }
     }
     private void NotifyCloneCount()
     {

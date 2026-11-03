@@ -17,11 +17,25 @@ public class RobotFeedback : MonoBehaviour
     [SerializeField] private float particlesLifetime = 3f;
 
     private AudioSource audioSource;
+    private RobotAI robotAI;
     private bool warningActive;
 
     private void Awake()
     {
         audioSource = GetComponent<AudioSource>();
+        robotAI = GetComponent<RobotAI>();
+    }
+
+    private void OnEnable()
+    {
+        robotAI.OnStateChanged += HandleStateChanged;
+        robotAI.OnTargetDestroyed += PlayDestroyEffects;
+    }
+
+    private void OnDisable()
+    {
+        robotAI.OnStateChanged -= HandleStateChanged;
+        robotAI.OnTargetDestroyed -= PlayDestroyEffects;
     }
 
     private void Update()
@@ -30,6 +44,24 @@ public class RobotFeedback : MonoBehaviour
         if (warningActive && alertLight != null)
         {
             alertLight.enabled = Mathf.FloorToInt(Time.time * warningBlinkRate * 2f) % 2 == 0;
+        }
+    }
+
+    // Patrol y Return muestran lo mismo, por eso caen en el default
+    private void HandleStateChanged(RobotState newState)
+    {
+        switch (newState)
+        {
+            case RobotState.Chase:
+                ShowChase();
+                PlayAlert();
+                break;
+            case RobotState.Destroy:
+                ShowWarning();
+                break;
+            default:
+                ShowPatrol();
+                break;
         }
     }
 
