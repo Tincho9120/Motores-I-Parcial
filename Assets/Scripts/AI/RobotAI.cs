@@ -15,6 +15,7 @@ public class RobotAI : MonoBehaviour
     [SerializeField] private float patrolSpeed = 2f;
     [Header("Persecución")]
     [SerializeField] private float chaseSpeed = 3.5f;
+    [SerializeField] private float reactionDelay = 1f;   // se queda quieto un rato antes de salir rodando
     [SerializeField] private float maxChaseTime = 20f; // si no llega en este tiempo, se rinde
     [SerializeField] private float ignoreTime = 8f;    // tiempo que ignora un clon al que no pudo llegar
     [Header("Visión")]
@@ -38,6 +39,7 @@ public class RobotAI : MonoBehaviour
     private float ignoreUntil;
     private float scanTimer;
     private float chaseTimer;
+    private float reactionTimer;
     private float destroyTimer;
     private void Awake()
     {
@@ -94,9 +96,10 @@ public class RobotAI : MonoBehaviour
         SetState(RobotState.Chase);
         targetClone = clone;
         chaseTimer = 0f;
-        agent.isStopped = false;
+        reactionTimer = 0f;
+        agent.isStopped = true;
+        agent.velocity = Vector3.zero;
         agent.speed = chaseSpeed;
-        GoTo(clone.transform.position);
     }
 
     private void UpdateChase()
@@ -104,6 +107,17 @@ public class RobotAI : MonoBehaviour
         if (targetClone == null)
         {
             EnterReturn();
+            return;
+        }
+        // Se queda quieto un momento, se hace bola y después sale rodando
+        if (reactionTimer < reactionDelay)
+        {
+            reactionTimer += Time.deltaTime;
+            if (reactionTimer >= reactionDelay)
+            {
+                agent.isStopped = false;
+                GoTo(targetClone.transform.position);
+            }
             return;
         }
         chaseTimer += Time.deltaTime;
