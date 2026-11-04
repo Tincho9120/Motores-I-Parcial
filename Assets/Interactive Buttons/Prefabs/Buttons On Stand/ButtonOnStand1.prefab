@@ -79,7 +79,7 @@ PrefabInstance:
       addedObject: {fileID: 434140931632292821}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 42aa288816a2ddb4bbea669803a00cdb, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 3468531818891771547}
+      addedObject: {fileID: 506411656307302164}
     - targetCorrespondingSourceObject: {fileID: 2345987608988435818, guid: 42aa288816a2ddb4bbea669803a00cdb, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6885467231462226126}
@@ -138,7 +138,7 @@ BoxCollider:
   m_Center: {x: 0, y: 5, z: 2}
 --- !u!95 &3959017220834839114
 Animator:
-  serializedVersion: 5
+  serializedVersion: 7
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -152,6 +152,7 @@ Animator:
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
@@ -168,6 +169,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -253,7 +255,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &3468531818891771547
+--- !u!114 &506411656307302164
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -262,7 +264,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 3487512448763160855}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5ab81465bb7ca074189f2bacc34ffb03, type: 3}
+  m_Script: {fileID: 11500000, guid: bc45a0454cc83be49842ba9c802087f2, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
-  mySound: {fileID: 8300000, guid: 10d0cc73dea0a2b4f9d17f5dc48231ae, type: 3}
+  m_EditorClassIdentifier: Assembly-CSharp::InteractableButton
+  door: {fileID: 0}
+  prompt: '[F] Interactuar'
+  buttonRenderer: {fileID: 6420082221070193567}
+  activeMaterial: {fileID: 2100000, guid: fc651e45f096fef409d9e255709ac1bc, type: 2}
+--- !u!23 &6420082221070193567 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 7331856937807136729, guid: 42aa288816a2ddb4bbea669803a00cdb, type: 3}
+  m_PrefabInstance: {fileID: 4370545293642093638}
+  m_PrefabAsset: {fileID: 0}

@@ -4,21 +4,41 @@ public class Door : MonoBehaviour
 {
     [SerializeField] private int requiredPlates = 1;
 
+    [Header("Hojas")]
+    [SerializeField] private Transform leftPanel;
+    [SerializeField] private Transform rightPanel;
+    [SerializeField] private float slideDistance = 10f;
+    [SerializeField] private float slideSpeed = 4f;
+
     [Header("Sonidos")]
     [SerializeField] private AudioClip openClip;
     [SerializeField] private AudioClip closeClip;
 
     private int activePlates = 0;
     private bool isOpen = false;
-    private MeshRenderer meshRenderer;
-    private Collider doorCollider;
     private AudioSource audioSource;
+    private Vector3 leftClosedPosition;
+    private Vector3 rightClosedPosition;
 
     private void Awake()
     {
-        meshRenderer = GetComponent<MeshRenderer>();
-        doorCollider = GetComponent<Collider>();
         audioSource = GetComponent<AudioSource>();
+
+        if (leftPanel != null)
+        {
+            leftClosedPosition = leftPanel.localPosition;
+        }
+
+        if (rightPanel != null)
+        {
+            rightClosedPosition = rightPanel.localPosition;
+        }
+    }
+
+    private void Update()
+    {
+        SlidePanel(leftPanel, leftClosedPosition, -slideDistance);
+        SlidePanel(rightPanel, rightClosedPosition, slideDistance);
     }
 
     public void ActivatePlate()
@@ -54,14 +74,12 @@ public class Door : MonoBehaviour
         }
     }
 
-    // Apaga el mesh y el collider en vez del objeto entero, asi el AudioSource puede sonar
     private void OpenDoor()
     {
         if (isOpen) return;
 
         isOpen = true;
         PlaySound(openClip);
-        ShowDoor(false);
     }
 
     private void CloseDoor()
@@ -70,12 +88,20 @@ public class Door : MonoBehaviour
 
         isOpen = false;
         PlaySound(closeClip);
-        ShowDoor(true);
     }
 
-    private void ShowDoor(bool visible)
+    // Cada hoja se corre para su costado sobre el eje X, y vuelve al lugar cuando se cierra
+    private void SlidePanel(Transform panel, Vector3 closedPosition, float offset)
     {
-        meshRenderer.enabled = visible;
-        doorCollider.enabled = visible;
+        if (panel == null) return;
+
+        Vector3 target = closedPosition;
+
+        if (isOpen)
+        {
+            target.x += offset;
+        }
+
+        panel.localPosition = Vector3.MoveTowards(panel.localPosition, target, slideSpeed * Time.deltaTime);
     }
 }

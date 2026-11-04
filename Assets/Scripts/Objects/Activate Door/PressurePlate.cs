@@ -10,14 +10,25 @@ public class PressurePlate : MonoBehaviour
     [Header("Sonidos")]
     [SerializeField] private AudioClip activateClip;
     [SerializeField] private AudioClip deactivateClip;
+
+    [Header("Color")]
+    [SerializeField] private Material activeMaterial;
     private int objectsOnPlate = 0;
     private bool playerCounted = false;
     private readonly HashSet<PushableBox> boxesOnPlate = new HashSet<PushableBox>();
     private AudioSource audioSource;
+    private Renderer plateRenderer;
+    private Material normalMaterial;
 
     private void Awake()
     {
         audioSource = GetComponent<AudioSource>();
+        plateRenderer = GetComponent<Renderer>();
+
+        if (plateRenderer != null)
+        {
+            normalMaterial = plateRenderer.sharedMaterial;
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -103,12 +114,22 @@ public class PressurePlate : MonoBehaviour
         }
     }
 
+    // Guardo el material original en el Awake, asi solo hay que cargar el de activada
+    private void SetMaterial(Material material)
+    {
+        if (plateRenderer != null && material != null)
+        {
+            plateRenderer.material = material;
+        }
+    }
+
     private void AddObjectToPlate()
     {
         objectsOnPlate++;
 
         if (objectsOnPlate == 1 && door != null)
         {
+            SetMaterial(activeMaterial);
             PlaySound(activateClip);
             door.ActivatePlate();
         }
@@ -124,6 +145,7 @@ public class PressurePlate : MonoBehaviour
 
             if (door != null)
             {
+                SetMaterial(normalMaterial);
                 PlaySound(deactivateClip);
                 door.DeactivatePlate();
             }
