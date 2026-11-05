@@ -7,7 +7,7 @@ public enum RobotState { Patrol, Chase, Destroy, Return }
 [RequireComponent(typeof(NavMeshAgent))]
 public class RobotAI : MonoBehaviour
 {
-    // Eventos: el robot avisa qué le pasa y quien quiera reaccionar se suscribe
+    // Eventos: el robot avisa que le pasa y quien quiera reaccionar se suscribe
     public event Action<RobotState> OnStateChanged;
     public event Action<Vector3> OnTargetDestroyed;
     [Header("Patrulla")]
@@ -15,9 +15,9 @@ public class RobotAI : MonoBehaviour
     [SerializeField] private float patrolSpeed = 2f;
     [Header("Persecución")]
     [SerializeField] private float chaseSpeed = 3.5f;
-    [SerializeField] private float reactionDelay = 1f;   // se queda quieto un rato antes de salir rodando
-    [SerializeField] private float maxChaseTime = 20f; // si no llega en este tiempo, se rinde
-    [SerializeField] private float ignoreTime = 8f;    // tiempo que ignora un clon al que no pudo llegar
+    [SerializeField] private float reactionDelay = 1f; 
+    [SerializeField] private float maxChaseTime = 20f; 
+    [SerializeField] private float ignoreTime = 8f;    
     [Header("Visión")]
     [SerializeField] private float viewRadius = 10f;
     [SerializeField, Range(1f, 360f)] private float viewAngle = 90f;
@@ -68,7 +68,7 @@ public class RobotAI : MonoBehaviour
             case RobotState.Chase: UpdateChase(); break;
             case RobotState.Destroy: UpdateDestroy(); break;
             case RobotState.Return: UpdateReturn(); break;
-        }
+        } 
     }
     private void SetState(RobotState newState)
     {
