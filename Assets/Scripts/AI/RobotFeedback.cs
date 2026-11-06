@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 [RequireComponent(typeof(AudioSource))]
 public class RobotFeedback : MonoBehaviour
@@ -16,14 +17,20 @@ public class RobotFeedback : MonoBehaviour
     [SerializeField] private ParticleSystem destroyParticlesPrefab;
     [SerializeField] private float particlesLifetime = 3f;
 
+    [Header("Animación")]
+    [SerializeField] private Animator animator;
+
     private AudioSource audioSource;
     private RobotAI robotAI;
     private bool warningActive;
+    private NavMeshAgent agent;
+    private RobotState state;
 
     private void Awake()
     {
         audioSource = GetComponent<AudioSource>();
         robotAI = GetComponent<RobotAI>();
+        agent = GetComponent<NavMeshAgent>();
     }
 
     private void OnEnable()
@@ -45,11 +52,21 @@ public class RobotFeedback : MonoBehaviour
         {
             alertLight.enabled = Mathf.FloorToInt(Time.time * warningBlinkRate * 2f) % 2 == 0;
         }
+
+        // Camina normal, y cuando persigue un clon se hace bola y rueda
+        if (animator != null && agent != null)
+        {
+            bool chasing = state == RobotState.Chase;
+            animator.SetBool("Roll_Anim", chasing);
+            animator.SetBool("Walk_Anim", !chasing && agent.velocity.magnitude > 0.1f);
+        }
     }
 
     // Patrol y Return muestran lo mismo, por eso caen en el default
     private void HandleStateChanged(RobotState newState)
     {
+        state = newState;
+
         switch (newState)
         {
             case RobotState.Chase:

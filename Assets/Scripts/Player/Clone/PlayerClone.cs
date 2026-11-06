@@ -13,6 +13,11 @@ public class PlayerClone : MonoBehaviour, IClonePool
     [SerializeField] private AudioClip createClip;
     [SerializeField] private AudioClip deleteClip;
 
+    [Header("Partículas")]
+    [SerializeField] private ParticleSystem createParticlesPrefab;
+    [SerializeField] private ParticleSystem deleteParticlesPrefab;
+    [SerializeField] private float particlesLifetime = 3f;
+
     private Queue<GameObject> clones = new Queue<GameObject>();
     private List<Collider> ignoredClones = new List<Collider>();
     private float lastCloneTime = -999f;
@@ -90,13 +95,20 @@ public class PlayerClone : MonoBehaviour, IClonePool
         characterController.Move(transform.forward * stepDistance * transform.localScale.x);
         clones.Enqueue(newClone);
         PlaySound(createClip);
+        PlayParticles(createParticlesPrefab, newClone.transform.position);
         NotifyCloneCount();
     }
     private void DeleteOldestClone()
     {
         if (clones.Count > 0)
         {
-            Destroy(clones.Dequeue());
+            // Agarro el clon antes de borrarlo para saber donde salen las particulas
+            GameObject oldest = clones.Dequeue();
+            if (oldest != null)
+            {
+                PlayParticles(deleteParticlesPrefab, oldest.transform.position);
+                Destroy(oldest);
+            }
             PlaySound(deleteClip);
             NotifyCloneCount();
         }
@@ -123,6 +135,15 @@ public class PlayerClone : MonoBehaviour, IClonePool
         if (audioSource != null && clip != null)
         {
             audioSource.PlayOneShot(clip);
+        }
+    }
+    private void PlayParticles(ParticleSystem prefab, Vector3 position)
+    {
+        if (prefab != null)
+        {
+            ParticleSystem fx = Instantiate(prefab, position, Quaternion.identity);
+            fx.Play();
+            Destroy(fx.gameObject, particlesLifetime);
         }
     }
     private void NotifyCloneCount()
